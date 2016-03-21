@@ -124,8 +124,7 @@ erpnext.selling.SellingController = erpnext.TransactionController.extend({
 
 		item.rate = flt(item.price_list_rate * (1 - item.discount_percentage / 100.0),
 			precision("rate", item));
-		
-		this.set_gross_profit(item);
+
 		this.calculate_taxes_and_totals();
 	},
 
@@ -136,7 +135,6 @@ erpnext.selling.SellingController = erpnext.TransactionController.extend({
 		} else {
 			this.price_list_rate(doc, cdt, cdn);
 		}
-		this.set_gross_profit(item);
 	},
 
 	commission_rate: function() {
@@ -179,21 +177,16 @@ erpnext.selling.SellingController = erpnext.TransactionController.extend({
 
 	warehouse: function(doc, cdt, cdn) {
 		var me = this;
+		this.batch_no(doc, cdt, cdn);
 		var item = frappe.get_doc(cdt, cdn);
-		
 		if(item.item_code && item.warehouse) {
 			return this.frm.call({
-				method: "erpnext.stock.get_item_details.get_bin_details",
+				method: "erpnext.stock.get_item_details.get_available_qty",
 				child: item,
 				args: {
 					item_code: item.item_code,
 					warehouse: item.warehouse,
 				},
-				callback:function(r){
-					if (inList(['Delivery Note', 'Sales Invoice'], doc.doctype)) {
-						me.batch_no(doc, cdt, cdn);
-					}
-				}
 			});
 		}
 	},
@@ -310,11 +303,11 @@ erpnext.selling.SellingController = erpnext.TransactionController.extend({
 	}
 });
 
-frappe.ui.form.on(cur_frm.doctype,"project", function(frm) {
+frappe.ui.form.on(cur_frm.doctype,"project_name", function(frm) {
 	if(in_list(["Delivery Note", "Sales Invoice"], frm.doc.doctype)) {
 		frappe.call({
 			method:'erpnext.projects.doctype.project.project.get_cost_center_name' ,
-			args: {	project: frm.doc.project	},
+			args: {	project_name: frm.doc.project_name	},
 			callback: function(r, rt) {
 				if(!r.exc) {
 					$.each(frm.doc["items"] || [], function(i, row) {

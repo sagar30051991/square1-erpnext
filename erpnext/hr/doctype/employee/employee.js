@@ -11,12 +11,9 @@ erpnext.hr.EmployeeController = frappe.ui.form.Controller.extend({
 	},
 
 	onload: function() {
-		this.frm.set_query("leave_approver", "leave_approvers", function(doc) {
+		this.frm.set_query("leave_approver", "leave_approvers", function() {
 			return {
-				query:"erpnext.hr.doctype.employee_leave_approver.employee_leave_approver.get_approvers",
-				filters:{
-					user: doc.user_id
-				}
+				filters: [["UserRole", "role", "=", "Leave Approver"]]
 			}
 		});
 	},

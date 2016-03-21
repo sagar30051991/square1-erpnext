@@ -2,7 +2,6 @@
 // License: GNU General Public License v3. See license.txt
 
 cur_frm.add_fetch('employee', 'company', 'company');
-cur_frm.add_fetch('company', 'default_letter_head', 'letter_head');
 
 // On load
 // -------------------------------------------------------------------

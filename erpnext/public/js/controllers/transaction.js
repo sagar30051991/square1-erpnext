@@ -186,7 +186,7 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 							ignore_pricing_rule: me.frm.doc.ignore_pricing_rule,
 							doctype: me.frm.doc.doctype,
 							name: me.frm.doc.name,
-							project: item.project || me.frm.doc.project,
+							project_name: item.project_name || me.frm.doc.project_name,
 							qty: item.qty
 						}
 					},
@@ -308,7 +308,7 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 
 		if (this.frm.doc.posting_date) var date = this.frm.doc.posting_date;
 		else var date = this.frm.doc.transaction_date;
-		set_party_account(set_pricing);
+		erpnext.get_fiscal_year(this.frm.doc.company, date, function() { set_party_account(set_pricing); });
 
 		if(this.frm.doc.company) {
 			erpnext.last_selected_company = this.frm.doc.company;
@@ -319,6 +319,8 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 		if (this.frm.doc.transaction_date) {
 			this.frm.transaction_date = this.frm.doc.transaction_date;
 		}
+
+		erpnext.get_fiscal_year(this.frm.doc.company, this.frm.doc.transaction_date);
 	},
 
 	posting_date: function() {
@@ -340,8 +342,11 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 						if(r.message) {
 							me.frm.set_value("due_date", r.message);
 						}
+						erpnext.get_fiscal_year(me.frm.doc.company, me.frm.doc.posting_date);
 					}
 				})
+			} else {
+				erpnext.get_fiscal_year(me.frm.doc.company, me.frm.doc.posting_date);
 			}
 		}
 	},
@@ -598,7 +603,6 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 			callback: function(r) {
 				if (!r.exc && r.message) {
 					me._set_values_for_item_list(r.message);
-					if(item) me.set_gross_profit(item);
 					if(calculate_taxes_and_totals) me.calculate_taxes_and_totals();
 				}
 			}
@@ -841,11 +845,11 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 			return;
 		}
 
+		if(!this.frm.doc.recurring_id) {
+			this.frm.set_value('recurring_id', this.frm.doc.name);
+		}
+
 		if(this.frm.doc.is_recurring) {
-			if(!this.frm.doc.recurring_id) {
-				this.frm.set_value('recurring_id', this.frm.doc.name);
-			}
-			
 			var owner_email = this.frm.doc.owner=="Administrator"
 				? frappe.user_info("Administrator").email
 				: this.frm.doc.owner;
@@ -872,13 +876,6 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 				refresh_field('to_date');
 			}
 		}
-	},
-	
-	set_gross_profit: function(item) {
-		if (this.frm.doc.doctype == "Sales Order" && item.valuation_rate) {
-			rate = flt(item.rate) * flt(this.frm.doc.conversion_rate || 1);
-			item.gross_profit = flt(((rate - item.valuation_rate) * item.qty), precision("amount", item));
-		}
 	}
 });
 
@@ -891,8 +888,7 @@ frappe.ui.form.on(cur_frm.doctype + " Item", "rate", function(frm, cdt, cdn) {
 	} else {
 		item.discount_percentage = 0.0;
 	}
-	
-	cur_frm.cscript.set_gross_profit(item);
+
 	cur_frm.cscript.calculate_taxes_and_totals();
 })
 

@@ -10,13 +10,6 @@ def get_data():
 			"type": "module"
 		},
 		{
-			"module_name": "Stock",
-			"color": "#f39c12",
-			"icon": "icon-truck",
-			"icon": "octicon octicon-package",
-			"type": "module"
-		},
-		{
 			"module_name": "CRM",
 			"color": "#EF4DB6",
 			"icon": "octicon octicon-broadcast",
@@ -65,6 +58,13 @@ def get_data():
 			"color": "#8e44ad",
 			"icon": "icon-puzzle-piece",
 			"icon": "octicon octicon-rocket",
+			"type": "module"
+		},
+		{
+			"module_name": "Stock",
+			"color": "#f39c12",
+			"icon": "icon-truck",
+			"icon": "octicon octicon-package",
 			"type": "module"
 		},
 		{

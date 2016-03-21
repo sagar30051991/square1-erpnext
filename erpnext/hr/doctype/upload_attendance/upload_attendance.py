@@ -37,10 +37,12 @@ def add_header(w):
 	w.writerow(["Status should be one of these values: " + status])
 	w.writerow(["If you are overwriting existing attendance records, 'ID' column mandatory"])
 	w.writerow(["ID", "Employee", "Employee Name", "Date", "Status",
-		 "Company", "Naming Series"])
+		"Fiscal Year", "Company", "Naming Series"])
 	return w
 
 def add_data(w, args):
+	from erpnext.accounts.utils import get_fiscal_year
+
 	dates = get_dates(args)
 	employees = get_active_employees()
 	existing_attendance_records = get_existing_attendance_records(args)
@@ -53,7 +55,8 @@ def add_data(w, args):
 			row = [
 				existing_attendance and existing_attendance.name or "",
 				employee.name, employee.employee_name, date,
-				existing_attendance and existing_attendance.status or "", employee.company,
+				existing_attendance and existing_attendance.status or "",
+				get_fiscal_year(date)[0], employee.company,
 				existing_attendance and existing_attendance.naming_series or get_naming_series(),
 			]
 			w.writerow(row)

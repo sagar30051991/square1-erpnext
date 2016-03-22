@@ -1,6 +1,6 @@
 // Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 // License: GNU General Public License v3. See license.txt
-
+{% include "customization/customer.js" %}
 frappe.ui.form.on("Customer", {
 	before_load: function(frm) {
 		frappe.setup_language_field(frm);
@@ -28,8 +28,9 @@ frappe.ui.form.on("Customer", {
 
 		frm.events.add_custom_buttons(frm);
 	},
+	//"Delivery Note", "Sales Invoice" remove in 33 line
 	add_custom_buttons: function(frm) {
-		["Opportunity", "Quotation", "Sales Order", "Delivery Note", "Sales Invoice"].forEach(function(doctype, i) {
+		["Opportunity", "Quotation", "Sales Order"].forEach(function(doctype, i) {
 			if(frappe.model.can_read(doctype)) {
 				frm.add_custom_button(__(doctype), function() {
 					frappe.route_options = {"customer": frm.doc.name};

@@ -1,6 +1,6 @@
 // Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 // License: GNU General Public License v3. See license.txt
-
+{% include "customization/sales_order.js" %}
 {% include 'selling/sales_common.js' %}
 
 frappe.ui.form.on("Sales Order", {
@@ -41,7 +41,7 @@ erpnext.selling.SalesOrderController = erpnext.selling.SellingController.extend(
 					}
 				}
 
-				if (this.frm.has_perm("submit")) {
+				/*if (this.frm.has_perm("submit")) {
 					// close
 					if(flt(doc.per_delivered, 2) < 100 || flt(doc.per_billed) < 100) {
 							cur_frm.add_custom_button(__('Close'), this.close_sales_order, __("Status"))
@@ -86,7 +86,7 @@ erpnext.selling.SalesOrderController = erpnext.selling.SellingController.extend(
 				if (this.frm.has_perm("submit")) {
 					// un-close
 					cur_frm.add_custom_button(__('Re-open'), cur_frm.cscript['Unclose Sales Order'], __("Status"));
-				}
+				}*/
 			}
 		}
 
